@@ -13,6 +13,10 @@
      (evaluate (substitute `(rec ,expr ,e0 ,x ,y ,e1) y (substitute expr x e1)) env k)]
     [`(rec ,e ,e0 ,x ,y ,e1) (evaluate e env (λ (v) (evaluate `(rec ,v ,e0 ,x ,y ,e1) env k)))]
     [(? eof-object? e) (k e)]
+    [`(custom-eval ,expr ,evaldef) ((eval evaldef) expr env k)]
+    [`(custom-cont ,expr ,k-) (evaluate expr env (eval k-))]
+    ;; instate and reify case(s?) should look pretty much like below, but what we want to
+    ;; generalize is 1) what gets called in place of `evaluate`, and 2) the continuation
     [x (if (hash-ref env x #f)
            (k (hash-ref env x))
            (begin
@@ -29,7 +33,6 @@
 (define (start-repl)
   (define env0 (make-hash))
   (evaluate (read) env0 (K env0)))
-
 
 ;; Auxilliary functions
 (define (z? e) (and (number? e) (zero? e)))
