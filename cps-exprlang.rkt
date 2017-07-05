@@ -13,15 +13,17 @@
      (evaluate (substitute `(rec ,expr ,e0 ,x ,y ,e1) y (substitute expr x e1)) env k)]
     [`(rec ,e ,e0 ,x ,y ,e1) (evaluate e env (λ (v) (evaluate `(rec ,v ,e0 ,x ,y ,e1) env k)))]
     [(? eof-object? e) (k e)]
-    [`(custom-eval ,expr ,evaldef) ((eval evaldef) expr env k)]
-    [`(custom-cont ,expr ,k-) (evaluate expr env (eval k-))]
-    ;; instate and reify case(s?) should look pretty much like below, but what we want to
-    ;; generalize is 1) what gets called in place of `evaluate`, and 2) the continuation
-    [x (if (hash-ref env x #f)
-           (k (hash-ref env x))
-           (begin
-             (printf "Unknown expression: ~a. Enter a definition:\n" x)
-             (evaluate (read) env (λ (v) (hash-set! env x v) (k v)))))]))
+    [`(custom-eval ,evaldef) ((eval evaldef) expr env k)]
+    [`(custom-cont ,k-) (evaluate expr env (eval k-))]
+    [`(,operator ,operand) ;; add new forms to the language! (almost)
+     (if (hash-ref env operator #f)
+         (evaluate `(ap ,(hash-ref env operator) ,operand) env k)
+         (begin
+           (printf "Enter an evaluator for ~a\n" expr)
+           (let ([new-eval (eval (read))])
+             (printf "Enter a continuation-generator:\n")
+             (let ([new-cont ((eval (read)) expr env k)])
+               (new-eval expr env new-cont)))))]))
 
 (define (K env)
   (λ (v)
