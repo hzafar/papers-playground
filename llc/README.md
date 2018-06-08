@@ -1,5 +1,7 @@
 # Linear Lambda Calculus Typechecker
 
+### References:
+
 http://homepages.inf.ed.ac.uk/wadler/papers/lineartaste/lineartaste-revised.pdf
 https://www.cs.cmu.edu/~fp/courses/linear/handouts/linear.pdf
 
