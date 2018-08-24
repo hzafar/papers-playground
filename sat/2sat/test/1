@@ -1,0 +1,6 @@
+~ from https://codegolf.stackexchange.com/questions/1933/solve~2~sat~boolean~satisfiability
+X1 X2
+X2 X3
+X3 X4
+~X1 ~X3
+~X2 ~X4
